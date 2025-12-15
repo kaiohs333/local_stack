@@ -17,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/kaiohs333/crud_serveless/issues"
   },
-  "homepage": "https://github.com/kaiohs333/crud_serveless#readme"
+  "homepage": "https://github.com/kaiohs333/crud_serveless#readme",
+  "dependencies": {
+    "joi": "^18.0.2",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "serverless-localstack": "^1.3.1"
+  }
 }

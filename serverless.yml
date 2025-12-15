@@ -1,10 +1,36 @@
 service: crud-serveless
 
-frameworkVersion: '3'
+frameworkVersion: '2'
+variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    host: http://localhost
+    edgePort: 4566
+    stages:
+      - local
+    lambda:
+      mountCode: true # Mounts local code to LocalStack Lambda, useful for debugging
+    # For DynamoDB, SNS, API Gateway
+    services:
+      dynamodb:
+        port: 4566
+      sns:
+        port: 4566
+      apigateway:
+        port: 4566
+      lambda:
+        port: 4566
+    # autostart: true # Automatically starts LocalStack if not running
+    # docker: true # Use Docker to run LocalStack
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
   region: us-east-1 # You can change this to your desired region
   # Add IAM permissions later
   iam:
@@ -24,12 +50,55 @@ provider:
           Resource: { "Fn::GetAtt": ["CrudEventsTopic", "TopicArn"] }
 
 functions:
-  hello:
-    handler: handler.hello
+  createItem:
+    handler: handler.createItem
     events:
       - httpApi:
-          path: /hello
+          path: /items
+          method: post
+    environment:
+      ITEMS_TABLE: ${self:resources.Resources.ItemsTable.Properties.TableName}
+      SNS_TOPIC_ARN: { "Fn::GetAtt": ["CrudEventsTopic", "TopicArn"] }
+  getAllItems:
+    handler: handler.getAllItems
+    events:
+      - httpApi:
+          path: /items
           method: get
+    environment:
+      ITEMS_TABLE: ${self:resources.Resources.ItemsTable.Properties.TableName}
+  getItem:
+    handler: handler.getItem
+    events:
+      - httpApi:
+          path: /items/{id}
+          method: get
+    environment:
+      ITEMS_TABLE: ${self:resources.Resources.ItemsTable.Properties.TableName}
+  updateItem:
+    handler: handler.updateItem
+    events:
+      - httpApi:
+          path: /items/{id}
+          method: put
+    environment:
+      ITEMS_TABLE: ${self:resources.Resources.ItemsTable.Properties.TableName}
+      SNS_TOPIC_ARN: { "Fn::GetAtt": ["CrudEventsTopic", "TopicArn"] }
+  deleteItem:
+    handler: handler.deleteItem
+    events:
+      - httpApi:
+          path: /items/{id}
+          method: delete
+    environment:
+      ITEMS_TABLE: ${self:resources.Resources.ItemsTable.Properties.TableName}
+      SNS_TOPIC_ARN: { "Fn::GetAtt": ["CrudEventsTopic", "TopicArn"] }
+  snsListener:
+    handler: handler.snsListener
+    events:
+      - sns:
+          topicName: ${self:resources.Resources.CrudEventsTopic.Properties.TopicName}
+          arn: { "Fn::GetAtt": ["CrudEventsTopic", "TopicArn"] }
 
 resources:
   Resources:
