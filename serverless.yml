@@ -7,6 +7,8 @@ provider:
   runtime: nodejs18.x
   region: us-east-1
   stage: ${opt:stage, 'local'}
+  environment:
+    DYNAMODB_TABLE: items-table-${self:provider.stage}
   iam:
     role:
       statements:

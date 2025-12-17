@@ -1,0 +1,103 @@
+================================================================================
+                    EVIDÊNCIAS DO PROJETO - LocalStack S3 Upload
+                    Data: 17 de Dezembro de 2025
+================================================================================
+
+1️⃣  INFRAESTRUTURA - Docker Compose
+================================================================================
+NAME              IMAGE                             STATUS              PORTS
+dynamodb-admin    aaronshaf/dynamodb-admin:latest   Up 5 minutes        127.0.0.1:8001->8001/tcp
+localstack-main   localstack/localstack:latest      Up 5 minutes        127.0.0.1:4566->4566/tcp, 127.0.0.1:4571->4571/tcp
+
+✅ Containers rodando corretamente
+
+2️⃣  LOCALSTACK HEALTH CHECK
+================================================================================
+{
+    "services": {
+        "apigateway": "available",
+        "dynamodb": "available",
+        "dynamodbstreams": "available",
+        "kinesis": "available",
+        "lambda": "available",
+        "s3": "running",
+        "sns": "available",
+        "sts": "available"
+    },
+    "edition": "community",
+    "version": "4.12.1.dev4"
+}
+
+✅ Serviço S3 está RUNNING
+
+3️⃣  LISTAGEM DE BUCKETS S3
+================================================================================
+Comando: aws s3 ls --endpoint-url http://localhost:4566
+
+Resultado:
+2025-12-17 18:40:43 shopping-images
+
+✅ Bucket shopping-images criado com sucesso
+
+4️⃣  OBJETOS NO BUCKET shopping-images
+================================================================================
+Comando: aws s3 ls s3://shopping-images --recursive --endpoint-url http://localhost:4566
+
+Resultado:
+2025-12-17 18:44:53         70 photos/evidence-upload.png
+2025-12-17 18:45:40         70 photos/mobile-upload-evidence.png
+2025-12-17 18:41:22         70 photos/test-1766007681.png
+
+✅ 3 imagens salvas no bucket S3
+
+5️⃣  LOGS DO LOCALSTACK - Operações S3
+================================================================================
+2025-12-17T21:39:26.618  INFO --- localstack.request.aws     : AWS s3.ListBuckets => 200
+2025-12-17T21:40:43.274  INFO --- localstack.request.aws     : AWS s3.CreateBucket => 200
+2025-12-17T21:41:02.869  INFO --- localstack.request.aws     : AWS s3.ListBuckets => 200
+2025-12-17T21:41:22.583  INFO --- localstack.request.aws     : AWS s3.PutObject => 200
+2025-12-17T21:41:34.107  INFO --- localstack.request.aws     : AWS s3.ListObjectsV2 => 200
+2025-12-17T21:43:58.215  INFO --- localstack.request.aws     : AWS s3.ListBuckets => 200
+2025-12-17T21:44:17.840  INFO --- localstack.request.aws     : AWS s3.ListObjectsV2 => 200
+2025-12-17T21:44:53.820  INFO --- localstack.request.aws     : AWS s3.PutObject => 200
+2025-12-17T21:45:40.548  INFO --- localstack.request.aws     : AWS s3.PutObject => 200
+2025-12-17T21:45:50.795  INFO --- localstack.request.aws     : AWS s3.ListObjectsV2 => 200
+
+✅ Todas operações retornaram código 200 (sucesso)
+
+================================================================================
+                              RESUMO DA VALIDAÇÃO
+================================================================================
+
+| Requisito                          | Status |
+|------------------------------------|--------|
+| Docker Compose com LocalStack      | ✅ OK  |
+| Serviço S3 rodando                 | ✅ OK  |
+| Bucket shopping-images criado      | ✅ OK  |
+| Upload de fotos funcionando        | ✅ OK  |
+| Endpoint de upload no backend      | ✅ OK  |
+| Integração mobile implementada     | ✅ OK  |
+
+================================================================================
+                         COMANDOS PARA REPRODUZIR
+================================================================================
+
+# Iniciar infraestrutura
+docker-compose up -d
+
+# Verificar containers
+docker-compose ps
+
+# Listar buckets
+aws s3 ls --endpoint-url http://localhost:4566
+
+# Listar fotos no bucket
+aws s3 ls s3://shopping-images --recursive --endpoint-url http://localhost:4566
+
+# Health check
+curl http://localhost:4566/_localstack/health
+
+================================================================================
+                    Projeto: PUC Minas - Engenharia de Software
+                    Disciplina: Cloud AWS
+================================================================================

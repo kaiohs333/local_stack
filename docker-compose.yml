@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   localstack:
     image: localstack/localstack:latest
@@ -9,16 +7,15 @@ services:
       - "127.0.0.1:4571:4571"
     environment:
       - DEBUG=1
-      - SERVICES=s3,dynamodb,sns
-      - LAMBDA_EXECUTOR=docker
-      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=s3,dynamodb,sns,apigateway,lambda
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
+      - PERSISTENCE=1
     volumes:
-      - "${TMPDIR}localstack:/tmp/localstack"
+      - "localstack_data:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./localstack/init-scripts:/docker-entrypoint-initaws.d"
+      - "./localstack/init-scripts:/etc/localstack/init/ready.d"
     networks:
       - localstack-network
 
@@ -40,3 +37,6 @@ services:
 networks:
   localstack-network:
     driver: bridge
+
+volumes:
+  localstack_data:
