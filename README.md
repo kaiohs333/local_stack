@@ -1,4 +1,4 @@
-# 📸 Shopping Images - AWS LocalStack S3 Upload
+# 📸 AWS LocalStack S3 Upload
 
 <div align="center">
 
@@ -434,13 +434,13 @@ aws s3 ls s3://shopping-images --recursive --endpoint-url http://localhost:4566
 
 ## 📄 Licença
 
-Este projeto é fornecido como material educacional para a disciplina de Cloud AWS da PUC Minas.
+
 
 ---
 
 <div align="center">
 
-**Desenvolvido para PUC Minas - Engenharia de Software**
+**Desenvolvido por Kaio H. Silveira para PUC Minas - Engenharia de Software**
 
 Dezembro 2025
 
